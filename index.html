@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Voice Enrollment & Verification</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Voice Enrollment & Verification</h1>
+
+        <div class="box">
+            <h2>Enroll a New User</h2>
+            <form id="enrollForm">
+                <label for="name">User Name:</label>
+                <input type="text" id="name" name="name" required>
+                <button type="submit">Enroll</button>
+            </form>
+            <p id="enrollStatus"></p>
+        </div>
+
+        <div class="box">
+            <h2>Verify a User</h2>
+            <button id="verifyBtn">Verify</button>
+            <p id="verifyStatus"></p>
+        </div>
+
+        <div class="box">
+            <h3>Enrolled Users:</h3>
+            <ul>
+                {% for user in users %}
+                    <li>{{ user }}</li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+
+<script>
+document.getElementById("enrollForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    const name = document.getElementById("name").value;
+    document.getElementById("enrollStatus").innerText = "🎙 Recording... Speak now.";
+    fetch("/enroll", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({name: name})
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("enrollStatus").innerText = data.message;
+        setTimeout(()=>{window.location.reload();}, 2000);
+    });
+});
+
+document.getElementById("verifyBtn").addEventListener("click", function(){
+    document.getElementById("verifyStatus").innerText = "🎙 Recording... Speak now.";
+    fetch("/verify", {
+        method: "POST"
+    })
+    .then(res => res.json())
+    .then(data => {
+        document.getElementById("verifyStatus").innerText = data.message;
+    });
+});
+</script>
+</body>
+</html>
